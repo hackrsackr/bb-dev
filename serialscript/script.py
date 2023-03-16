@@ -14,7 +14,7 @@ PORT = '/dev/ttyACM0'
 # See the pyserial documentation for more info
 # https://pythonhosted.org/pyserial/pyserial_api.html#classes
 ser = serial.Serial(port=PORT,
-                    baudrate=9600,
+                    baudrate=115200,
                     timeout=1)
 
 try:
