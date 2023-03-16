@@ -1,35 +1,50 @@
 """
-Code example for polling data from Spark services
+Code example for publishing data to the Brewblox eventbus
 
 Dependencies:
-- requests
+- paho-mqtt
 """
 
+import json
+from random import random
 from time import sleep
 
-import requests
-from requests.exceptions import ConnectionError, HTTPError
+from paho.mqtt import client as mqtt
 
 # 172.17.0.1 is the default IP address for the host running the Docker container
 # Change this value if Brewblox is installed on a different computer
-HOST = '172.17.0.1'
+HOST = '10.0.0.96'
 
-# The Spark service name. Change it if yours is called something else.
-SPARK_SERVICE = 'spark-one'
-URL = f'http://{HOST}/{SPARK_SERVICE}/blocks/all/read/logged'
+# 1883 is the default port for MQTT, but this can be changed in brewblox env settings.
+PORT = 1883
 
-print(f'Polling {URL}. To exit press Ctrl+C')
+# This is a constant value. You never need to change it.
+HISTORY_TOPIC = 'brewcast/history'
 
-while True:
-    try:
-        sleep(10)
-        resp = requests.post(URL)
-        resp.raise_for_status()
+# The history service is subscribed to all topics starting with 'brewcast/history'
+# We can make our topic more specific to help debugging
+TOPIC = HISTORY_TOPIC + '/pubscript'
 
-        # For now we just print the response data
-        print(resp.json())
+# Create an MQTT client
+client = mqtt.Client()
 
-    except (HTTPError, ConnectionError) as ex:
-        # We don't want the script to exit when we get a HTTP error
-        # These are probably caused by the Spark service not being available (yet)
-        print(f'Error: {ex}')
+try:
+    client.connect_async(host=HOST, port=PORT)
+    client.loop_start()
+
+    value = 20
+
+    while True:
+        # https://www.brewblox.com/dev/reference/history_events.html
+        value += ((random() - 0.5) * 10)
+        message = {
+            'key': 'pubscript',
+            'data': {'value[degC]': value}
+        }
+
+        client.publish(TOPIC, json.dumps(message))
+        print(f'sent {message}')
+        sleep(5)
+
+finally:
+    client.loop_stop()
