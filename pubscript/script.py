@@ -13,7 +13,7 @@ from paho.mqtt import client as mqtt
 
 # 172.17.0.1 is the default IP address for the host running the Docker container
 # Change this value if Brewblox is installed on a different computer
-HOST = '172.17.0.1'
+HOST = '10.0.0.96'
 
 # 1883 is the default port for MQTT, but this can be changed in brewblox env settings.
 PORT = 1883
