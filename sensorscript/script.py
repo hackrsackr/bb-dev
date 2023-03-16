@@ -13,7 +13,7 @@ from paho.mqtt import client as mqtt
 
 # 172.17.0.1 is the default IP address for the host running the Docker container
 # Change this value if Brewblox is installed on a different computer
-HOST = '172.17.0.1'
+HOST = '10.0.0.96'
 
 # 1883 is the default port for MQTT, but this can be changed in brewblox env settings.
 PORT = 1883
@@ -45,7 +45,7 @@ try:
 
         message = {
             # The block ID
-            'id': 'Tutorial Sensor',
+            'id': 'EXT_tempTest',
 
             # The unique service name
             'serviceId': 'spark-one',
@@ -55,7 +55,7 @@ try:
 
             # We only write the field we want to change
             # Because we're using patch, the other settings will remain unchanged
-            'data': { 'setting[degC]': value },
+            'data': {'setting[degC]': value},
         }
 
         client.publish(TOPIC, json.dumps(message))
